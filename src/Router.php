@@ -67,9 +67,23 @@ class Router extends Controller {
             $reflection = new \ReflectionFunction($route->get_callback());
             $params = $reflection->getParameters();
             foreach ($params as $param) {
-                if ($param->getType() && $param->getType()->getName() == 'PDO') {
-                    $route->add_param($this->pdo);
+                
+                $type = $param->getType() ? $param->getType()->getName() : null;
+                if ($type === null) {
+                    continue;
                 }
+
+                if ($type == 'PDO') {
+                    $route->add_param($this->pdo);
+                } else if (substr($type, -10) == 'Repository') {
+                    // Name is the same as the class name without the Repository suffix and after the last slash
+                    $name = substr($type, 0, -10);
+                    $name = substr($name, strrpos($name, '\\') + 1);
+                    $name = strtolower($name);
+                    $controller = new $type($this->pdo, $name);
+                    $route->add_param($controller);
+                }
+
             }
         }
     }
