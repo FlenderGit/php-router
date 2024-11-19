@@ -17,10 +17,10 @@ class QueryBuilder {
 	private int $offset;
 	private int $limit;
 	private PDO $pdo;
-    private string $class_name;
+    private ?string $class_name;
     private array $arguments;
 
-	public function __construct(string $table_name, ?string $alias, PDO $pdo, string $class_name) {
+	public function __construct(string $table_name, ?string $alias, PDO $pdo, ?string $class_name = null) {
 		$this->table_name = $table_name;
         $this->alias = $alias;
         $this->select = '*';
@@ -91,6 +91,11 @@ class QueryBuilder {
         $stmt = $this->pdo->prepare($this->__toString());
         if (!$stmt) throw new mysqli_sql_exception("Error in the query : ".$this->__toString());
         $stmt->execute($this->arguments);
+
+        if ($this->class_name === null) {
+            return $stmt->getIterator();
+        }
+
         return new PDOCursorIterator($stmt, $this->class_name);
 	}
 

@@ -18,9 +18,9 @@ class Repository {
      */
 	private PDO $pdo;
 
-    private string $class_name;
+    private ?string $class_name;
 
-	public function __construct(PDO $pdo, string $table_name, string $class_name) {
+	public function __construct(PDO $pdo, string $table_name, ?string $class_name = null) {
         $this->pdo = $pdo;
         $this->table_name = $table_name;
         $this->class_name = $class_name;
