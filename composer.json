@@ -1,0 +1,17 @@
+{
+    "name": "flender/php-router",
+    "description": "A tiny php router",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "Flender\\PhpRouter\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "flender",
+            "email": "tristan.deloeil@gmail.com"
+        }
+    ],
+    "require": {}
+}
