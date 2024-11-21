@@ -1,7 +1,5 @@
 <?php
-use Flender\PhpRouter\Azure\Credentials;
-use Flender\PhpRouter\Azure\OpenAI;
-use Flender\PhpRouter\Response\HtmlResponse;
+use Flender\PhpRouter\Response\RedirectionResponse;
 use Flender\PhpRouter\Router;
 use Flender\PhpRouter\Response\JsonResponse;
 
@@ -28,23 +26,21 @@ function is_authenticaded() {
 load_env();
 $router = new Router();
 
-$credentials = Credentials::from_env();
-$openai = new OpenAI($credentials);
-
 $router->get('/', function() {
     return "Hello World!";
 });
 
-$router->get('/thread/:id', function(string $id) use ($openai) {
-    return new JsonResponse($openai->get_thread($id));
+$router->get('/blog/:id', function(string $id) {
+    return new JsonResponse([
+        'id' => $id,
+        'title' => 'My first blog post',
+        'content' => 'This is the content of my first blog post'
+    ]);
 });
 
-$router->post('/thread/:id/message', function(int $id) use ($openai) {
+$router->post('/thread/:id/message', function(int $id) {
     is_authenticaded();
-    $thread = $openai->get_thread($id);
-    $thread->send_message($_POST['message']);
-    $thread->run();
-    return new JsonResponse($thread);
+    return new RedirectionResponse("/thread/$id");
 });
 
 $router->run();
