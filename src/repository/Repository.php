@@ -38,7 +38,7 @@ class Repository {
      * @return array
      * @throws \mysqli_sql_exception
      */
-	public function getAll(): Iterator {
+	public function getAll(): array {
 		return $this->createQueryBuilder()->getResults();
 	}
 
@@ -50,14 +50,14 @@ class Repository {
      * @param array $options
      * @return array
      */
-	public function find(array $options=[]): Iterator {
+	public function find_one(array $options=[]): array {
 
         $t = array();
         foreach($options as $key => $value) {
-            $t[$key] = "{$key} = :{$key}";
+            $t[$key] = "$key = :$key";
         }
 
-		return $this->createQueryBuilder()->where(implode(' AND ', $t))->addArguments($options)->getResults();
+		return $this->createQueryBuilder()->where(join(' AND ', $t))->addArguments($options)->getResult();
 	}
 
     public function getNumberTotalRows(): int {

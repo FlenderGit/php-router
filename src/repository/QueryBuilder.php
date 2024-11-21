@@ -86,11 +86,14 @@ class QueryBuilder {
 
 	// Prepare
 
-	public function getResults(): Iterator {
+	public function getResults(): array {
 		if (!$this->pdo) throw new mysqli_sql_exception("PDO is not defined");
         $stmt = $this->pdo->prepare($this->__toString());
-        if (!$stmt) throw new mysqli_sql_exception("Error in the query : ".$this->__toString());
+        if (!$stmt) throw new mysqli_sql_exception("Error in the query : " . $this->__toString());
         $stmt->execute($this->arguments);
+
+        return $this->class_name === null ? $stmt->fetchAll(PDO::FETCH_ASSOC) : $stmt->fetchAll(PDO::FETCH_CLASS, $this->class_name);
+
 
         if ($this->class_name === null) {
             return $stmt->getIterator();
@@ -103,7 +106,8 @@ class QueryBuilder {
 		if (!$this->pdo) throw new mysqli_sql_exception("PDO is not defined");
         $stmt = $this->pdo->prepare($this->__toString());
         $stmt->execute($this->arguments);
-		return  $stmt->fetch(PDO::FETCH_ASSOC);
+        $out = $stmt->fetch(PDO::FETCH_ASSOC);
+		return  empty($out) ? [] : $out;
 	}
 
 	public function __toString() {
